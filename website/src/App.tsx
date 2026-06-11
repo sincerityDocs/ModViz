@@ -11,7 +11,6 @@ import {
   CheckCircle, 
   Compass, 
   MapPin, 
-  Flame, 
   Truck, 
   X,
   Sparkles
@@ -384,10 +383,10 @@ export default function App() {
     <div className="flex-grow flex flex-col bg-slate-950 text-slate-100 min-h-screen">
       
       {/* Dynamic Announcement Banner */}
-      <div className="bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 py-1.5 px-4 text-center text-xs font-bold tracking-wider text-white flex items-center justify-center gap-2">
-        <Flame className="w-4 h-4 animate-bounce" />
-        <span>MODVIZ 2026 AI ENGINE IS LIVE: INSTANT 1.2S RENDERING ACTIVATED FOR ALL VEHICLES</span>
-        <Flame className="w-4 h-4 animate-bounce" />
+      <div className="bg-gradient-to-r from-cyan-600 via-blue-500 to-indigo-500 py-1.5 px-4 text-center text-xs font-bold tracking-wider text-white flex items-center justify-center gap-2">
+        <Sparkles className="w-4 h-4 animate-bounce" />
+        <span>MODVIZ PRE-LAUNCH DEMO: AI CUSTOMIZATION VISUALIZATION SIMULATION</span>
+        <Sparkles className="w-4 h-4 animate-bounce" />
       </div>
 
       {/* Main Premium Navigation Header */}
@@ -410,10 +409,10 @@ export default function App() {
         <div className="hidden md:flex items-center gap-6 text-xs text-slate-400 font-medium">
           <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-800/80 py-1.5 px-3 rounded-full">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-            <span>Renders Completed: <strong className="text-emerald-400">1,482 today</strong></span>
+            <span>Demo Engine: <strong className="text-emerald-400">Online</strong></span>
           </div>
           <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-800/80 py-1.5 px-3 rounded-full">
-            <span>Avg Speed: <strong className="text-cyan-400">1.2 seconds</strong></span>
+            <span>Render Target: <strong className="text-cyan-400">&lt;8s / actual ~500ms</strong></span>
           </div>
         </div>
 
@@ -527,10 +526,10 @@ export default function App() {
           <div className="bg-slate-900/20 border border-slate-900 rounded-2xl p-4 flex flex-col gap-3">
             <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-400">
               <Truck className="w-4 h-4 text-cyan-400" />
-              <span>Authorized Premier Dealer</span>
+              <span>Pre-launch sourcing preview</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-normal">
-              100% authentic carbon fiber and aero. Drop-shipped direct from Seibon, APR, Vorsteiner warehouses. Includes full manufacturer quality guarantee.
+              Supplier terms, availability, and fulfillment must be verified before live orders.
             </p>
           </div>
         </div>
@@ -708,7 +707,7 @@ export default function App() {
             {/* Stage Actions: Share & Download */}
             <div className="border-t border-slate-900/60 pt-4 flex items-center justify-between">
               <div className="text-xs text-slate-500 font-medium">
-                Render completed in <strong className="text-slate-300">1.2 seconds</strong>
+                Render completed in <strong className="text-slate-300">~500ms (composited)</strong>
               </div>
 
               <div className="flex items-center gap-2">
@@ -890,7 +889,7 @@ export default function App() {
               onClick={() => setCheckoutOpen(true)}
               className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-slate-950 font-extrabold text-sm py-3 px-8 rounded-xl shadow-lg shadow-cyan-400/20 transition flex items-center gap-2"
             >
-              <span>Secure Checkout</span>
+              <span>Preview Test Checkout</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -951,11 +950,11 @@ export default function App() {
                     <div className="bg-slate-950/30 border border-slate-800 rounded-2xl p-4 flex flex-col gap-2.5 text-xs text-slate-400">
                       <div className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                        <span>Free insured freight drop-shipping</span>
+                        <span>Shipping/fulfillment shown for demo only</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                        <span>Ships from premier dealer network</span>
+                        <span>Final availability, shipping cost, and dealer terms pending verification.</span>
                       </div>
                     </div>
                   </div>
@@ -1080,7 +1079,7 @@ export default function App() {
                   </div>
                   <h3 className="text-xl font-black text-white">ModViz Build Simulated Order Authorized!</h3>
                   <p className="text-xs text-slate-400 mt-2 max-w-sm">
-                    Thank you, {formData.name || "Tuner"}! This simulated order has been processed in test mode. In a live store, this would route your modification package directly to premier dealers for drop-shipping.
+                    Thank you, {formData.name || "Tuner"}! This simulated order has been processed in test mode. In a live store, fulfillment would only proceed after supplier availability and terms are verified.
                   </p>
 
                   <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 my-6 w-full max-w-md text-left text-xs flex flex-col gap-2.5">
@@ -1089,8 +1088,8 @@ export default function App() {
                       <strong className="text-slate-200">MV-DEMO-{Math.floor(100000 + Math.random() * 900000)}</strong>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Simulated Drop-ship Delivery:</span>
-                      <strong className="text-emerald-400">3-5 Business Days (Insured Demo)</strong>
+                      <span className="text-slate-500">Simulated Fulfillment Info:</span>
+                      <strong className="text-cyan-400">Demo Simulation (Supplier Verification Pending)</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Authorization Code:</span>
@@ -1137,16 +1136,16 @@ export default function App() {
       {/* FOOTER */}
       <footer className="bg-slate-950 border-t border-slate-900/80 px-6 py-6 mt-12 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          &copy; 2026 ModViz Inc. Built with premium drop-shipping dealer connections.
+          &copy; 2026 ModViz Inc. Pre-launch demo mode.
         </div>
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1">
             <ShieldCheck className="w-4 h-4 text-cyan-500" />
-            <span>Secured SSL Auth</span>
+            <span>Mock checkout</span>
           </span>
           <span className="flex items-center gap-1">
             <Compass className="w-4 h-4 text-cyan-500" />
-            <span>Drop-Ship Insured</span>
+            <span>Supplier verification pending</span>
           </span>
         </div>
       </footer>
