@@ -90,6 +90,74 @@ const CAR_MODELS = [
   }
 ];
 
+// Dynamic visualizer URL pointing to FastAPI port 8001 engine (via server proxy)
+const getVisualizerUrl = (
+  carId: string,
+  angle: string,
+  wrap: Product | null,
+  splitter: Product | null,
+  spoiler: Product | null
+) => {
+  // Map carId to visualizer engine vehicle ID
+  let vehicle = "bmw-m4";
+  if (carId.includes("m4")) vehicle = "bmw-m4";
+  else if (carId.includes("supra")) vehicle = "supra";
+  else if (carId.includes("brz")) vehicle = "brz";
+  else if (carId.includes("gtr")) vehicle = "gtr";
+
+  // Map angle
+  let viewParam = "three-quarter";
+  if (angle === "front") viewParam = "three-quarter"; // front 3/4
+  else if (angle === "side") viewParam = "side";
+  else if (angle === "rear") viewParam = "rear";
+
+  // Map wrap color ID
+  let colorParam = "";
+  if (wrap) {
+    const wrapName = wrap.name.toLowerCase();
+    if (wrapName.includes("black")) colorParam = "matte-black";
+    else if (wrapName.includes("white")) colorParam = "pearl-white";
+    else if (wrapName.includes("gray") || wrapName.includes("grey") || wrapName.includes("nardo")) colorParam = "nardo-gray";
+    else if (wrapName.includes("bronze")) colorParam = "matte-bronze";
+    else if (wrapName.includes("blue") || wrapName.includes("frozen")) colorParam = "frozen-blue";
+    else if (wrapName.includes("silver")) colorParam = "matte-silver";
+    else if (wrapName.includes("green") || wrapName.includes("lime")) colorParam = "lime-green";
+    else if (wrapName.includes("red") || wrapName.includes("candy")) colorParam = "candy-red";
+    else if (wrapName.includes("satin")) colorParam = "satin-pearl";
+    else if (wrapName.includes("charcoal")) colorParam = "matte-charcoal";
+    else if (wrapName.includes("purple")) colorParam = "midnight-purple";
+  }
+
+  // Map mods
+  let modParam = "stock";
+  const hasSplitter = !!splitter;
+  const hasSpoiler = !!spoiler;
+
+  if (vehicle === "bmw-m4") {
+    if (hasSplitter && hasSpoiler) modParam = "carbon-kit";
+    else if (hasSplitter) modParam = "carbon-splitter";
+    else if (hasSpoiler) modParam = "carbon-kit";
+  } else if (vehicle === "supra") {
+    if (hasSplitter && hasSpoiler) modParam = "carbon-kit";
+    else if (hasSplitter) modParam = "carbon-kit";
+    else if (hasSpoiler) modParam = "carbon-wing";
+  } else if (vehicle === "brz") {
+    if (hasSplitter && hasSpoiler) modParam = "carbon-kit";
+    else if (hasSplitter) modParam = "street-kit";
+    else if (hasSpoiler) modParam = "carbon-kit";
+  } else if (vehicle === "gtr") {
+    if (hasSplitter && hasSpoiler) modParam = "carbon-full";
+    else if (hasSplitter) modParam = "carbon-aero";
+    else if (hasSpoiler) modParam = "carbon-full";
+  }
+
+  let url = `/api/visualize?vehicle=${vehicle}&view=${viewParam}`;
+  if (colorParam) url += `&color=${colorParam}`;
+  if (modParam !== "stock") url += `&mod=${modParam}`;
+
+  return url;
+};
+
 export default function App() {
   // State variables
   const [catalog, setCatalog] = useState<Product[]>([]);
@@ -109,6 +177,10 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<'wrap' | 'splitter' | 'spoiler' | 'wheels'>('wrap');
   const [beforeAfterSplit, setBeforeAfterSplit] = useState<number>(50); // slider percent
   const [showCompare, setShowCompare] = useState<boolean>(false);
+
+  const baseImageUrl = customPhotoUrl
+    ? customPhotoUrl
+    : getVisualizerUrl(activeCar.id, activeAngle, null, null, null);
   const [checkoutOpen, setCheckoutOpen] = useState<boolean>(false);
   const [orderComplete, setOrderComplete] = useState<boolean>(false);
   const [shareLink, setShareLink] = useState<string | null>(null);
@@ -144,13 +216,18 @@ export default function App() {
   // Update render photo when active car or angle changes
   useEffect(() => {
     if (!customPhotoUrl) {
-      if (activeAngle === 'front') setActiveImageUrl(activeCar.imageFront);
-      else if (activeAngle === 'side') setActiveImageUrl(activeCar.imageSide);
-      else setActiveImageUrl(activeCar.imageRear);
+      const url = getVisualizerUrl(
+        activeCar.id,
+        activeAngle,
+        selectedMods.wrap,
+        selectedMods.splitter,
+        selectedMods.spoiler
+      );
+      setActiveImageUrl(url);
     } else {
       setActiveImageUrl(customPhotoUrl);
     }
-  }, [activeCar, activeAngle, customPhotoUrl]);
+  }, [activeCar, activeAngle, customPhotoUrl, selectedMods]);
 
   // Handle Share link parsing (?share=XYZ)
   useEffect(() => {
@@ -520,7 +597,7 @@ export default function App() {
                     src={activeImageUrl}
                     alt={activeCar.model}
                     className="w-full h-full object-cover select-none transition-all duration-700"
-                    style={{ filter: getColorFilter(selectedMods.wrap?.image_url) }}
+                    style={{ filter: customPhotoUrl ? getColorFilter(selectedMods.wrap?.image_url) : undefined }}
                   />
 
                   {/* High Fidelity Aero Overlay Graphic badges */}
@@ -557,7 +634,7 @@ export default function App() {
                     style={{ width: `${beforeAfterSplit}%`, zIndex: 1 }}
                   >
                     <img
-                      src={activeImageUrl}
+                      src={baseImageUrl}
                       alt="Base OEM car"
                       className="absolute inset-0 w-full h-full object-cover"
                       style={{ width: '480px', maxWidth: 'unset' }}
@@ -573,7 +650,7 @@ export default function App() {
                       src={activeImageUrl}
                       alt="Modified Car"
                       className="w-full h-full object-cover"
-                      style={{ filter: getColorFilter(selectedMods.wrap?.image_url) }}
+                      style={{ filter: customPhotoUrl ? getColorFilter(selectedMods.wrap?.image_url) : undefined }}
                     />
                     <div className="absolute top-3 right-3 bg-cyan-950/90 py-1 px-2 text-[8px] tracking-wider uppercase font-extrabold border border-cyan-800 rounded text-cyan-400">
                       ModViz Rendered

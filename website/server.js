@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
+import http from 'http';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +14,39 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// Proxy non-local /api/* requests to port 8001 (Visualizer Service)
+app.use('/api', (req, res, next) => {
+  const localPaths = ['/products', '/share'];
+  const isLocal = localPaths.some(p => req.path.startsWith(p));
+  if (isLocal) {
+    return next();
+  }
+
+  // Forward to port 8001
+  const options = {
+    hostname: '127.0.0.1',
+    port: 8001,
+    path: `/api${req.url}`,
+    method: req.method,
+    headers: {
+      ...req.headers,
+      host: '127.0.0.1:8001'
+    }
+  };
+
+  const proxyReq = http.request(options, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res, { end: true });
+  });
+
+  proxyReq.on('error', (err) => {
+    console.error('Visualizer Proxy error:', err.message);
+    res.status(502).json({ error: 'Visualizer Service Offline' });
+  });
+
+  req.pipe(proxyReq, { end: true });
+});
 
 // Expose shared renders directory statically under /renders
 const SHARED_RENDERS_DIR = '/home/team/shared/renders';
