@@ -198,6 +198,8 @@ export default function App() {
     cardCvv: ""
   });
 
+  const [paymentProvider, setPaymentProvider] = useState<'stripe' | 'paypal'>('stripe');
+
   // Load product catalog from Express server
   useEffect(() => {
     fetch('/api/products')
@@ -1026,48 +1028,110 @@ export default function App() {
                       </div>
 
                       <div className="border-t border-slate-800/80 my-1 pt-3">
-                        <label className="text-[10px] uppercase font-bold text-slate-400">Credit Card Number</label>
-                        <input 
-                          type="text" 
-                          required
-                          value={formData.cardNum}
-                          onChange={(e) => setFormData(p => ({ ...p, cardNum: e.target.value }))}
-                          placeholder="4111 2222 3333 4444" 
-                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:border-cyan-500 focus:outline-none text-slate-200 mt-1" 
-                        />
+                        <label className="text-[10px] uppercase font-bold text-slate-400">Payment Method</label>
+                        <div className="grid grid-cols-2 gap-3 mt-1.5 mb-3">
+                          <button
+                            type="button"
+                            onClick={() => setPaymentProvider('stripe')}
+                            className={`p-3 rounded-xl border text-left transition flex flex-col gap-1 ${
+                              paymentProvider === 'stripe'
+                                ? 'bg-cyan-500/10 border-cyan-500 text-white shadow-lg shadow-cyan-500/5'
+                                : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <span className="text-xs font-bold text-white">Stripe</span>
+                              <span className="bg-cyan-500/20 text-cyan-400 text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded">Preferred</span>
+                            </div>
+                            <span className="text-[9px] text-slate-500 leading-tight">Direct credit card integration</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setPaymentProvider('paypal')}
+                            className={`p-3 rounded-xl border text-left transition flex flex-col gap-1 ${
+                              paymentProvider === 'paypal'
+                                ? 'bg-amber-500/10 border-amber-500 text-white shadow-lg shadow-amber-500/5'
+                                : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <span className="text-xs font-bold text-white">PayPal</span>
+                              <span className="bg-amber-500/20 text-amber-400 text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded">Placeholder</span>
+                            </div>
+                            <span className="text-[9px] text-slate-500 leading-tight">Express wallet checkout</span>
+                          </button>
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-[10px] uppercase font-bold text-slate-400">Expiration</label>
-                          <input 
-                            type="text" 
-                            required
-                            value={formData.cardExpiry}
-                            onChange={(e) => setFormData(p => ({ ...p, cardExpiry: e.target.value }))}
-                            placeholder="MM/YY" 
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:border-cyan-500 focus:outline-none text-slate-200 mt-1" 
-                          />
+                      {paymentProvider === 'stripe' ? (
+                        <>
+                          <div className="bg-slate-950/40 p-2.5 border border-slate-800/80 rounded-xl mb-3">
+                            <p className="text-[10px] text-slate-400 leading-normal">
+                              💳 <strong>Stripe Integration Partner:</strong> ModViz supports native Stripe Elements. Ready for production card processing. To connect a live account, complete your payment onboarding under the <strong>Finance settings tab</strong>.
+                            </p>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] uppercase font-bold text-slate-400">Credit Card Number</label>
+                            <input 
+                              type="text" 
+                              required={paymentProvider === 'stripe'}
+                              value={formData.cardNum}
+                              onChange={(e) => setFormData(p => ({ ...p, cardNum: e.target.value }))}
+                              placeholder="4111 2222 3333 4444" 
+                              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:border-cyan-500 focus:outline-none text-slate-200 mt-1" 
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="text-[10px] uppercase font-bold text-slate-400">Expiration</label>
+                              <input 
+                                type="text" 
+                                required={paymentProvider === 'stripe'}
+                                value={formData.cardExpiry}
+                                onChange={(e) => setFormData(p => ({ ...p, cardExpiry: e.target.value }))}
+                                placeholder="MM/YY" 
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:border-cyan-500 focus:outline-none text-slate-200 mt-1" 
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase font-bold text-slate-400">Security Code</label>
+                              <input 
+                                type="text" 
+                                required={paymentProvider === 'stripe'}
+                                value={formData.cardCvv}
+                                onChange={(e) => setFormData(p => ({ ...p, cardCvv: e.target.value }))}
+                                placeholder="CVC" 
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:border-cyan-500 focus:outline-none text-slate-200 mt-1" 
+                              />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-2.5">
+                          <div className="flex items-center gap-2 text-amber-400 text-xs font-bold">
+                            <Sparkles className="w-4 h-4 shrink-0 text-amber-400 animate-pulse" />
+                            <span>PayPal Integration Placeholder</span>
+                          </div>
+                          <p className="text-[11px] text-slate-400 leading-normal">
+                            PayPal express integration is a placeholder. Live transactions will be configured once the store owner registers an official business account and decides on API integration/SDK keys.
+                          </p>
+                          <div className="bg-slate-900 border border-slate-850 p-3 rounded-xl text-center text-xs text-slate-500 font-bold border-dashed mt-1 select-none">
+                            🟡 PayPal Express Checkout Button Placeholder
+                          </div>
                         </div>
-                        <div>
-                          <label className="text-[10px] uppercase font-bold text-slate-400">Security Code</label>
-                          <input 
-                            type="text" 
-                            required
-                            value={formData.cardCvv}
-                            onChange={(e) => setFormData(p => ({ ...p, cardCvv: e.target.value }))}
-                            placeholder="CVC" 
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:border-cyan-500 focus:outline-none text-slate-200 mt-1" 
-                          />
-                        </div>
-                      </div>
+                      )}
                     </div>
 
                     <button 
                       type="submit"
                       className="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-extrabold text-sm py-3 px-6 rounded-xl shadow-lg transition mt-2 w-full text-center"
                     >
-                      Authorize Test Payment (Demo Mode) - ${totalBuildPrice.toLocaleString()}
+                      {paymentProvider === 'stripe' 
+                        ? `Authorize Test Stripe Payment (Demo Mode) - ${totalBuildPrice.toLocaleString()}`
+                        : `Simulate PayPal Express Checkout (Demo Mode) - ${totalBuildPrice.toLocaleString()}`}
                     </button>
                   </form>
                 </div>
@@ -1086,6 +1150,10 @@ export default function App() {
                     <div className="flex justify-between">
                       <span className="text-slate-500">Simulated Invoice ID:</span>
                       <strong className="text-slate-200">MV-DEMO-{Math.floor(100000 + Math.random() * 900000)}</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Simulated Payment Provider:</span>
+                      <strong className="text-slate-200 capitalize">{paymentProvider} (Test Mode)</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Simulated Fulfillment Info:</span>
