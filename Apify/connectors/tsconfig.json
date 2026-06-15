@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
+  },
+  "include": [
+    "shared/**/*.ts",
+    "amazon-scraper/**/*.ts",
+    "ebay-scraper/**/*.ts",
+    "google-serp/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}
