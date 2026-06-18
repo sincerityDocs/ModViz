@@ -1068,7 +1068,7 @@ export default function App() {
                         <>
                           <div className="bg-slate-950/40 p-2.5 border border-slate-800/80 rounded-xl mb-3">
                             <p className="text-[10px] text-slate-400 leading-normal">
-                              💳 <strong>Stripe Integration Partner:</strong> ModViz supports native Stripe Elements. Ready for production card processing. To connect a live account, complete your payment onboarding under the <strong>Finance settings tab</strong>.
+                              💳 <strong>Stripe-ready checkout placeholder:</strong> This demo is prepared to connect to Stripe once Finance onboarding is complete. No live card processing is enabled yet.
                             </p>
                           </div>
 
