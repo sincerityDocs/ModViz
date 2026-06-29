@@ -1,0 +1,32 @@
+{
+  "name": "modviz-apify-connectors",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint 'shared/**/*.ts' 'amazon-scraper/**/*.ts' 'ebay-scraper/**/*.ts' 'google-serp/**/*.ts'",
+    "test": "jest",
+    "start:amazon": "node dist/amazon-scraper/src/indexamazon.js",
+    "start:ebay": "node dist/ebay-scraper/src/indexebay.js",
+    "start:google": "node dist/google-serp/src/indexgoogle.js"
+  },
+  "dependencies": {
+    "apify-client": "^2.9.4",
+    "https-proxy-agent": "^7.0.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.5",
+    "typescript": "^5.5.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": ["**/*.test.ts"]
+  }
+}
