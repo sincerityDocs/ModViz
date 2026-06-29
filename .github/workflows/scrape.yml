@@ -31,22 +31,36 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
+          cache-dependency-path: Apify/connectors/pnpm-lock.yaml
 
       - name: Install dependencies
+        working-directory: Apify/connectors
         run: pnpm install
 
       - name: Build
+        working-directory: Apify/connectors
         run: pnpm build
 
       - name: Run scraper
+        working-directory: Apify/connectors
         env:
           APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
           SEARCH_QUERY: ${{ inputs.search_query }}
-        run: node dist/${{ inputs.connector }}-scraper/src/index${{ inputs.connector }}.js
+        run: |
+          if [ "${{ inputs.connector }}" = "amazon" ]; then
+            node dist/amazon-scraper/src/indexamazon.js
+          elif [ "${{ inputs.connector }}" = "ebay" ]; then
+            node dist/ebay-scraper/src/indexebay.js
+          elif [ "${{ inputs.connector }}" = "google" ]; then
+            node dist/google-serp/src/indexgoogle.js
+          else
+            echo "Unknown connector: ${{ inputs.connector }}"
+            exit 1
+          fi
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: scrape-results-${{ github.run_id }}
-          path: metrics/
+          path: Apify/connectors/metrics/
           if-no-files-found: ignore
