@@ -1,0 +1,52 @@
+name: Run Scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      connector:
+        description: 'Which connector to run'
+        required: true
+        default: 'amazon'
+        type: choice
+        options:
+          - amazon
+          - ebay
+          - google
+      search_query:
+        description: 'Search query'
+        required: true
+        default: 'mirror caps'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Run scraper
+        env:
+          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
+          SEARCH_QUERY: ${{ inputs.search_query }}
+        run: node dist/${{ inputs.connector }}-scraper/src/index${{ inputs.connector }}.js
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-results-${{ github.run_id }}
+          path: metrics/
+          if-no-files-found: ignore
