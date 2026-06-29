@@ -1,0 +1,119 @@
+{
+  "version": "1.0",
+  "budget": {
+    "total_calls_cap": 3000,
+    "alert_threshold_pct": 0.9
+  },
+  "alerts": {
+    "github_issues": {
+      "enabled": true,
+      "token_secret": "GITHUB_BOT_TOKEN",
+      "repo": "sincerityDocs/connectors"
+    },
+    "slack": {
+      "enabled": true,
+      "webhook_secret": "SLACK_WEBHOOK_URL"
+    }
+  },
+  "metrics": {
+    "collect": ["run_duration", "success_rate", "requests_made", "count_429", "price_delta_count"],
+    "output": "github_artifacts",
+    "lead_check_interval_minutes": 10
+  },
+  "connectors": [
+    {
+      "id": "amazon-scraper",
+      "apify_actor": "junglee/amazon-crawler",
+      "description": "Scrapes Amazon product listings (US sellers, strict schema)",
+      "docker_image": "modviz/apify-amazon-scraper:latest",
+      "secrets": {
+        "apify_token": "APIFY_API_TOKEN",
+        "proxy_url": "DATACENTER_PROXY_URL"
+      },
+      "budget": {
+        "per_run_call_cap": 20,
+        "daily_call_cap": 500,
+        "max_runtime_seconds": 20,
+        "deep_insight_runs_cap": 5,
+        "deep_insight_max_seconds": 30
+      },
+      "retry": {
+        "max_retries": 3,
+        "backoff_base_seconds": 2,
+        "pause_on_persistent_failure": true
+      },
+      "output_schema": {
+        "required": ["title", "price", "availability", "url"],
+        "strict": true,
+        "filters": { "country": "US" }
+      },
+      "rate_limits": {
+        "requests_per_minute": 10
+      }
+    },
+    {
+      "id": "ebay-scraper",
+      "apify_actor": "harvestlab/ebay-scraper",
+      "description": "Scrapes eBay listings (Buy It Now, new condition only)",
+      "docker_image": "modviz/apify-ebay-scraper:latest",
+      "secrets": {
+        "apify_token": "APIFY_API_TOKEN",
+        "proxy_url": "DATACENTER_PROXY_URL"
+      },
+      "budget": {
+        "per_run_call_cap": 20,
+        "daily_call_cap": 500,
+        "max_runtime_seconds": 20,
+        "deep_insight_runs_cap": 5,
+        "deep_insight_max_seconds": 30
+      },
+      "retry": {
+        "max_retries": 3,
+        "backoff_base_seconds": 2,
+        "pause_on_persistent_failure": true
+      },
+      "output_schema": {
+        "required": ["title", "price", "shipping", "listingType", "condition", "url"],
+        "strict": true,
+        "filters": {
+          "listingType": "FixedPrice",
+          "condition": "New"
+        }
+      },
+      "rate_limits": {
+        "requests_per_minute": 10
+      }
+    },
+    {
+      "id": "google-serp",
+      "apify_actor": "apify/google-search-scraper", 
+      "description": "Scrapes Google Search results for product research",
+      "docker_image": "modviz/apify-google-serp:latest",
+      "secrets": {
+        "apify_token": "APIFY_API_TOKEN",
+        "proxy_url": "DATACENTER_PROXY_URL"
+      },
+      "budget": {
+        "per_run_call_cap": 20,
+        "daily_call_cap": 500,
+        "max_runtime_seconds": 120,
+        "deep_insight_runs_cap": 5,
+        "deep_insight_max_seconds": 30
+      },
+      "retry": {
+        "max_retries": 3,
+        "backoff_base_seconds": 2,
+        "pause_on_persistent_failure": true
+      },
+      "output_schema": {
+        "required": ["rank", "title", "url", "domain", "timestamp"],
+        "optional": ["visible_price"],
+        "max_results": 15,
+        "strict": true
+      },
+      "rate_limits": {
+        "requests_per_minute": 5
+      }
+    }
+  ]
+}
